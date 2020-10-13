@@ -13,7 +13,6 @@ struct Pipe
 
 struct CS
 {
-	
 	int id;
 	string name;
 	int amount;
@@ -24,13 +23,14 @@ struct CS
 
 void addpipe(Pipe& pipe1)
 {
+	
 	cout << "Введите идентификатор: ";
 	cin >> pipe1.id;
 	cout << "Введите длину: ";
 	cin >> pipe1.length;
 	cout << "Введите диаметр: ";
 	cin >> pipe1.diam;
-	cout << "HZ: ";
+	cout << "Ремонт: ";
 	cin >> pipe1.repair;
 	pipe1.exist= true;
 
@@ -55,29 +55,47 @@ void addcs(CS& cs1)
 
 void view(Pipe pipe1, CS cs1)
 {
+	if (pipe1.exist == true)
+	{
 	cout << endl;
 	cout << "Труба" << endl;
 	cout << "Идентификатор: " << pipe1.id << endl;
 	cout << "Длина: " << pipe1.length << endl;
 	cout << "Диаметр: " << pipe1.diam << endl;
-	cout << "HZ: " << pipe1.repair << endl;
-	cout << endl;
-	cout << "Компрессорная станция" << endl;
-	cout << "Идентификатор: " << cs1.id << endl;
-	cout << "Название: " << cs1.name << endl;
-	cout << "Количество цехов: " << cs1.amount << endl;
-	cout << "Количество рабочих цехов: " << cs1.amount_work << endl;
-	cout << "Эффективность: " << cs1.perfomance << endl;
-	
-
+	cout << "Ремонт: " << pipe1.repair << endl;
+	}
+	else
+	{
+		cout << "Вы забыли ввести данные для трубы!" << endl;
+	}
+	if (cs1.exist == true)
+	{
+		cout << endl;
+		cout << "Компрессорная станция" << endl;
+		cout << "Идентификатор: " << cs1.id << endl;
+		cout << "Название: " << cs1.name << endl;
+		cout << "Количество цехов: " << cs1.amount << endl;
+		cout << "Количество рабочих цехов: " << cs1.amount_work << endl;
+		cout << "Эффективность: " << cs1.perfomance << endl;
+	}
+	else
+	{
+		cout << "Вы забыли ввести данные для КС!" << endl;
+	}
 }
 
 void editing(Pipe& pipe1)
 {
+	if (pipe1.exist == true)
+	{
 	cout << endl;
-	cout << "HZ: ";
+	cout << "Ремонт: ";
 	cin >> pipe1.repair;
-	
+	}
+	else
+	{
+		cout << "Вы забыли ввести данные для трубы" << endl;
+	}
 }
 
 void ceh(CS& cs1)
@@ -96,12 +114,12 @@ void ceh(CS& cs1)
 			else
 			{
 				cs1.amount_work++;
-				cout << "Новое количество цехов: " << cs1.amount_work << endl;
+				cout << "Новое количество рабочих цехов: " << cs1.amount_work << endl;
 			}
 		}
 		else
 		{
-			if (cs1.amount <= cs1.amount_work)
+			if (cs1.amount < cs1.amount_work)
 			{
 				cout << "Ошибка" << endl;
 			}
@@ -110,7 +128,7 @@ void ceh(CS& cs1)
 				if (cs1.amount_work > 0)
 				{
 					cs1.amount_work--;
-					cout <<"Новое количество цехов: "<< cs1.amount_work << endl;
+					cout << "Новое количество рабочих цехов: " << cs1.amount_work << endl;
 				}
 				else
 				{
@@ -118,12 +136,13 @@ void ceh(CS& cs1)
 				}
 			}
 		}
-
-
+	}
+	else
+	{
+		cout << "Вы забыли ввести данные для КС!" << endl;
 	}
 
-
-}
+	}
 
 void output(Pipe pipe1, CS cs1)
 {
@@ -134,7 +153,7 @@ void output(Pipe pipe1, CS cs1)
 		outf << "Идентификатор: " << pipe1.id << endl;
 		outf << "Длина: " << pipe1.length << endl;
 		outf << "Диаметр: " << pipe1.diam << endl;
-		outf << "HZ: " << pipe1.repair << endl;
+		outf << "Ремонт: " << pipe1.repair << endl;
 	}
 	else
 	{
@@ -161,7 +180,8 @@ void output(Pipe pipe1, CS cs1)
 void input(Pipe& pipe1, CS& cs1)
 {
 	ifstream fin("InPut.txt");
-
+	pipe1.exist = true;
+	cs1.exist = true;
 	if (!fin.is_open())
 		cout << "Файл не может быть открыт!\n"; 
 	else
@@ -172,18 +192,6 @@ void input(Pipe& pipe1, CS& cs1)
 }
 
 
-void check()
-{
-	do
-	{
-		cin.clear();
-		cin.ignore(1000, '\n');
-		int number;
-		cin >> number;
-	}
-		while (cin.fail());
-	
-}
 
 void menu()
 {
@@ -207,12 +215,16 @@ int main()
 	setlocale(LC_ALL, "Russian");
 	Pipe pipe1;
 	CS cs1; 
-
 	while (true)
 	{
 		menu();
 		int number;
-		cin >> number;
+		do {
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cin >> number;
+		} while ((number < 0 || number>7) || (cin.fail()));
+
 		switch (number)
 		{
 		case 0:
@@ -238,6 +250,7 @@ int main()
 		case 4:
 		{
 			editing(pipe1);
+			system("Pause");
 			break;
 		}
 		case 5:
