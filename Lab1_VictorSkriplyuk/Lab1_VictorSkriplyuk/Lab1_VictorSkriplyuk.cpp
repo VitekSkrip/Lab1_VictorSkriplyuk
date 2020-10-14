@@ -254,7 +254,8 @@ int GetCorrectNumber(int left, int right)
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
-		cout << "Ошибка при вводе" << endl;
+		cout << "Ошибка при вводе" << endl << "Введите команду: ";
+
 	}
 	return x;
 }
