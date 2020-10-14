@@ -46,7 +46,7 @@ void addpipe(Pipe& pipe1)
 		cin.ignore(1000, '\n');
 		cout << "Ремонт: ";
 		cin >> pipe1.repair;
-	} while (pipe1.repair < 0 || cin.fail());
+	} while (cin.fail());
 
 	pipe1.exist = true;
 
@@ -60,12 +60,10 @@ void addcs(CS& cs1)
 		cout << "Введите идентификатор: ";
 		cin >> cs1.id;
 	} while (cs1.id < 0 || cin.fail());
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
+
 		cout << "Введите название: ";
 		cin >> cs1.name;
-	} while (cin.fail());
+
 	do {
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -131,7 +129,7 @@ void editing(Pipe& pipe1)
 			cin.ignore(1000, '\n');
 			cout << "Ремонт: ";
 			cin >> pipe1.repair;
-		} while (pipe1.repair < 0 || cin.fail());
+		} while (cin.fail());
 	}
 	else
 	{
@@ -249,7 +247,17 @@ void menu()
 
 }
 
-
+int GetCorrectNumber(int left, int right)
+{
+	int x;
+	while (((cin >> x)).fail() || x<left || x>right)
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Ошибка при вводе" << endl;
+	}
+	return x;
+}
 
 int main()
 {
@@ -259,13 +267,7 @@ int main()
 	while (true)
 	{
 		menu();
-		int number;
-		do {
-			cin.clear();
-			cin.ignore(1000, '\n');
-			cin >> number;
-		} while ((number < 0 || number>7) || (cin.fail())); // работает, но первый корректный проход не считает почему-то
-		switch (number)
+		switch (GetCorrectNumber(0,7))
 		{
 		case 0:
 		{
