@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{458b930f-4671-48ec-aaf7-bb3c076d23a1}</ProjectGuid>
+    <ProjectGuid>{406fe8b2-3935-4877-8a13-3dd801631a3d}</ProjectGuid>
     <RootNamespace>Lab1VictorSkriplyuk</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Lab1 - Victor Skriplyuk.cpp" />
+    <ClCompile Include="Lab1_VictorSkriplyuk.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
