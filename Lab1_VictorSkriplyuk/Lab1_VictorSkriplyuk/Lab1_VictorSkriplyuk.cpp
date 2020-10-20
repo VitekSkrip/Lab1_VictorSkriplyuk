@@ -21,26 +21,28 @@ struct CS
 	bool exist = false;
 };
 
+template <typename T>
+void checking(T& obj, string x)
+{
+	do
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << x;
+		cin >> obj;
+	} while (obj < 0 || cin.fail());
+}
+
 void addpipe(Pipe& pipe1)
 {
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите идентификатор: ";
-		cin >>pipe1.id;
-	} while (pipe1.id<0 || cin.fail());
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите длину: ";
-		cin >>  pipe1.length;;
-	} while (pipe1.length <0 || cin.fail());
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите диаметр: ";
-		cin >> pipe1.diam;
-	} while (pipe1.diam < 0 || cin.fail());
+	string x;
+	x = "Введите идентификатор: ";
+	checking(pipe1.id,x);
+	x = "Введите длину ";
+	checking(pipe1.length,x);
+	x = "Введите диаметр ";
+	checking(pipe1.diam,x);
+
 	do {
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -54,34 +56,25 @@ void addpipe(Pipe& pipe1)
 
 void addcs(CS& cs1)
 {
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите идентификатор: ";
-		cin >> cs1.id;
-	} while (cs1.id < 0 || cin.fail());
+	string x;
+	x = "Введите идентификатор: ";
+	checking(cs1.id,x);
 
 		cout << "Введите название: ";
 		cin >> cs1.name;
 
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите количество цехов: ";
-		cin >> cs1.amount;
-	} while (cs1.amount < 0 || cin.fail());
+	x = "Введите количество цехов: ";
+	checking(cs1.amount,x);
+
 	do {
 		cin.clear();
 		cin.ignore(1000, '\n');
 		cout << "Введите количество цехов в работе: ";
 		cin >> cs1.amount_work;
 	} while (cs1.amount_work>cs1.amount || cs1.amount_work< 0 || cin.fail());
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите эффективность: ";
-		cin >> cs1.perfomance;
-	} while (cs1.perfomance< 0 || cin.fail());
+
+	x = "Введите показатель эффективности: ";
+	checking(cs1.perfomance,x);
 	
 	cs1.exist = true;
 
