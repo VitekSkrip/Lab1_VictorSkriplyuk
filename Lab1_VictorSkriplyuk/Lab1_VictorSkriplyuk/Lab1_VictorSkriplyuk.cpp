@@ -74,8 +74,12 @@ void addcs(CS& cs1)
 		cin >> cs1.amount_work;
 	} while (cs1.amount_work>cs1.amount || cs1.amount_work< 0 || cin.fail());
 
-	x = "Введите показатель эффективности: ";
-	checking(cs1.perfomance,x);
+	do {
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Введите эффективность: ";
+		cin >> cs1.perfomance;
+	} while (cs1.perfomance<0 || cs1.perfomance>1 || cin.fail());
 	
 	cs1.exist = true;
 
