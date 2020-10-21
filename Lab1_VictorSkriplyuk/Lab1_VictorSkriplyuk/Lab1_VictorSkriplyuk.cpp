@@ -7,7 +7,7 @@ struct Pipe
 	int id;
 	float length;
 	float diam;
-	bool repair = false;
+	bool repair;
 	bool exist = false;
 };
 
@@ -21,34 +21,34 @@ struct CS
 	bool exist = false;
 };
 
-template <typename T>
-void checking(T& obj, string x)
+template <typename T>       // шаблон "template" - для работы с обобщенным типом данных
+//нашел по ссылке - http://cppstudio.com/post/5188/ 
+void checking(T& var, string com)
 {
 	do
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
-		cout << x;
-		cin >> obj;
-	} while (obj < 0 || cin.fail());
+		cout << com;
+		cin >> var;
+	} while (var < 0 || cin.fail());
 }
 
 void addpipe(Pipe& pipe1)
 {
 	string x;
+
 	x = "Введите идентификатор: ";
 	checking(pipe1.id,x);
-	x = "Введите длину ";
+
+	x = "Введите длину: ";
 	checking(pipe1.length,x);
-	x = "Введите диаметр ";
+
+	x = "Введите диаметр: ";
 	checking(pipe1.diam,x);
 
-	do {
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Ремонт: ";
-		cin >> pipe1.repair;
-	} while (cin.fail());
+	x = "Ремонт: ";
+	checking(pipe1.repair, x);
 
 	pipe1.exist = true;
 
@@ -57,11 +57,12 @@ void addpipe(Pipe& pipe1)
 void addcs(CS& cs1)
 {
 	string x;
+
 	x = "Введите идентификатор: ";
 	checking(cs1.id,x);
 
-		cout << "Введите название: ";
-		cin >> cs1.name;
+	cout << "Введите название: ";
+	cin >> cs1.name;
 
 	x = "Введите количество цехов: ";
 	checking(cs1.amount,x);
@@ -116,13 +117,11 @@ void editing(Pipe& pipe1)
 {
 	if (pipe1.exist == true)
 	{
+		string x;
 		cout << endl;
-		do {
-			cin.clear();
-			cin.ignore(1000, '\n');
-			cout << "Ремонт: ";
-			cin >> pipe1.repair;
-		} while (cin.fail());
+
+		x = "Ремонт: ";
+		checking(pipe1.repair, x);
 	}
 	else
 	{
@@ -247,8 +246,7 @@ int GetCorrectNumber(int left, int right)
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
-		cout << "Ошибка при вводе" << endl << "Введите команду: ";
-
+		cout << "Ошибка при вводе!" << endl << "Введите команду: ";
 	}
 	return x;
 }
