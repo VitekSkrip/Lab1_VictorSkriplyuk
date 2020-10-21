@@ -23,7 +23,7 @@ struct CS
 };
 
 template <typename T>       // шаблон "template" - для работы с обобщенным типом данных
-//нашел по ссылке - http://cppstudio.com/post/5188/ 
+							//нашел по ссылке - http://cppstudio.com/post/5188/ 
 void checking(T& var, string com)
 {
 	do
@@ -68,7 +68,7 @@ void addcs(CS& cs1)
 		cin.ignore(1000, '\n');
 		cout << "Введите название: ";
 		getline(cin, cs1.name);  //нашел по ссылке: http://espressocode.top/getline-string-c/
-		// нужно для того, чтобы считывало не одно слово - но не знаю, почему пропускает одну строчку в консоли
+								// нужно для того, чтобы считывало не одно слово - но не знаю, почему пропускает одну строчку в консоли
 	} while (cin.fail());
 
 	x = "Введите количество цехов: ";
@@ -217,6 +217,7 @@ void output(Pipe pipe1, CS cs1)
 		cout << "Вы забыли ввести данные для КС!" << endl;
 		outf << "Вы забыли ввести данные для КС!";
 	}
+	outf.close();
 }
 
 void input(Pipe& pipe1, CS& cs1)
@@ -231,6 +232,7 @@ void input(Pipe& pipe1, CS& cs1)
 		fin >> pipe1.id >> pipe1.length >> pipe1.diam >> pipe1.repair;
 		fin >> cs1.id >> cs1.name >> cs1.amount >> cs1.amount_work >> cs1.perfomance;
 	}
+	fin.close();
 }
 
 
