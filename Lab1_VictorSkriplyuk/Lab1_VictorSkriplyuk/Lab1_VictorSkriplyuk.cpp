@@ -1,5 +1,6 @@
 ﻿#include<iostream>
 #include<fstream>
+#include <string>
 using namespace std;
 
 struct Pipe
@@ -57,12 +58,18 @@ void addpipe(Pipe& pipe1)
 void addcs(CS& cs1)
 {
 	string x;
-
+	string str;
 	x = "Введите идентификатор: ";
 	checking(cs1.id,x);
 
-	cout << "Введите название: ";
-	cin >> cs1.name;
+	do
+	{ 
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Введите название: ";
+		getline(cin, cs1.name);  //нашел по ссылке: http://espressocode.top/getline-string-c/
+		// нужно для того, чтобы считывало не одно слово - но не знаю, почему пропускает одну строчку в консоли
+	} while (cin.fail());
 
 	x = "Введите количество цехов: ";
 	checking(cs1.amount,x);
