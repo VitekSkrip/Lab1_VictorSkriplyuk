@@ -1,6 +1,7 @@
 ﻿#include<iostream>
 #include<fstream>
 #include <string>
+#include <vector>
 using namespace std;
 
 struct Pipe
@@ -64,31 +65,29 @@ void addpipe(Pipe& pipe)
 void addcs(CS& cs)
 {
 	checking(cs.id, "Введите идентификатор: ",0, 10000);
-	do
-	{ 
-		cin.clear();
-		cin.ignore(1000, '\n');
-		cout << "Введите название: ";
-		getline(cin, cs.name);  //нашел по ссылке: http://espressocode.top/getline-string-c/
-								// нужно для того, чтобы считывало не одно слово - но не знаю, почему пропускает одну строчку в консоли
-	} while (cin.fail());
+
+	cout << "Введите название: ";
+	cin.clear();
+	cin.ignore();
+	getline(cin, cs.name);			//нашел по ссылке: http://espressocode.top/getline-string-c/
+									// нужно для того, чтобы считывало не одно слово - но не знаю, почему пропускает одну строчку в консоли
 
 	checking(cs.amount, "Введите количество цехов: ",0,1000);
 	checking(cs.amount_work, "Введите количество цехов в работе: ", 0, cs.amount);
 	checking(cs.perfomance, "Введите эффективность: ", 0, 1);
 }
 
-void view_pipe(Pipe pipe)
+void view_pipe(const Pipe& pipe)
 {
-		cout << endl;
-		cout << "Труба" << endl;
-		cout << "Идентификатор: " << pipe.id << endl;
-		cout << "Длина: " << pipe.length << endl;
-		cout << "Диаметр: " << pipe.diam << endl;
-		cout << "Ремонт: " << pipe.repair << endl;
+	cout << endl;
+	cout << "Труба" << endl;
+	cout << "Идентификатор: " << pipe.id << endl;
+	cout << "Длина: " << pipe.length << endl;
+	cout << "Диаметр: " << pipe.diam << endl;
+	cout << "Ремонт: " << pipe.repair << endl;
 }
 
-void view_cs(CS cs)
+void view_cs(const CS& cs)
 	{
 		cout << endl;
 		cout << "Компрессорная станция" << endl;
@@ -134,50 +133,32 @@ void editing_cs(CS& cs)
 		}
 	}
  
-void savePIPE_into_file(Pipe pipe)
+void savePIPE_into_file(ofstream& fout, const Pipe& pipe)
 {
-	ofstream outf("OutPut_Pipe.txt");
-	if (!outf.is_open())
-		cout << "Файл не может быть открыт!\n";
-	else
-	{ 
-	outf << "Труба" << endl; 
-	outf << "Идентификатор: " << pipe.id << endl;
-	outf << "Длина: " << pipe.length << endl;
-	outf << "Диаметр: " << pipe.diam << endl;
-	outf << "Ремонт: " << pipe.repair << endl;
-	outf.close();
-	}
+	fout << "Идентификатор: " << pipe.id << endl;
+	fout << "Длина: " << pipe.length << endl;
+	fout << "Диаметр: " << pipe.diam << endl;
+	fout << "Ремонт: " << pipe.repair << endl;
 }
 
-void saveCS_into_file(CS cs)
+
+void saveCS_into_file(ofstream& fout, const CS& cs)
 {
-	ofstream outf("OutPut_CS.txt");
-	if (!outf.is_open())
-		cout << "Файл не может быть открыт!\n";
-	else
-	{
-		outf << endl;
-		outf << "Компрессорная станция" << endl;
-		outf << "Идентификатор: " << cs.id << endl;
-		outf << "Название: " << cs.name << endl;
-		outf << "Количество цехов: " << cs.amount << endl;
-		outf << "Количество рабочих цехов: " << cs.amount_work << endl;
-		outf << "Эффективность: " << cs.perfomance << endl;
-	}
+	fout << "Идентификатор: " << cs.id << endl;
+	fout << "Название: " << cs.name << endl;
+	fout << "Количество цехов: " << cs.amount << endl;
+	fout << "Количество рабочих цехов: " << cs.amount_work << endl;
+	fout << "Эффективность: " << cs.perfomance << endl;
 }
 
-void load_from_file(Pipe& pipe, CS& cs)
+void loadPipe_from_file(ifstream& fin, Pipe& pipe)
 {
-	ifstream fin("InPut.txt");
-	if (!fin.is_open())
-		cout << "Файл не может быть открыт!\n";
-	else
-	{
-		fin >> pipe.id >> pipe.length >> pipe.diam >> pipe.repair;
-		fin >> cs.id >> cs.name >> cs.amount >> cs.amount_work >> cs.perfomance;
-		fin.close();
-	}
+	fin >> pipe.id >> pipe.length >> pipe.diam >> pipe.repair;
+}
+
+void loadCS_from_file(ifstream& fin, CS& cs)
+{
+	fin >> cs.id >> cs.name >> cs.amount >> cs.amount_work >> cs.perfomance;
 }
 
 void menu()
@@ -196,11 +177,25 @@ void menu()
 	cout << "Введите команду: ";
 }
 
+Pipe& SelectPipe(vector<Pipe>& g)
+{
+	unsigned int index;
+	checking(index, "Введите идентификатор: ", 1u, g.size());
+	return g[index-1];
+}
+
+CS& SelectCS(vector<CS>& g)
+{
+	unsigned int index;
+	checking(index, "Введите идентификатор: ", 1u, g.size());
+	return g[index - 1];
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	Pipe pipe;
-	CS cs;
+	vector <Pipe> pipe_group;
+	vector <CS> cs_group;
 	bool pipe_exist = false;
 	bool cs_exist = false;
 	while (true)
@@ -214,59 +209,97 @@ int main()
 		}
 		case 1:
 		{
+			Pipe pipe;
 			addpipe(pipe);
 			pipe_exist = true;
+			pipe_group.push_back(pipe);
 			break;
 		}
 		case 2:
 		{
+			CS cs;
 			addcs(cs);
 			cs_exist = true;
+			cs_group.push_back(cs);
 			break;
 			
 		}
 		case 3:
 		{
-			view_pipe(pipe);
+			if (pipe_exist) view_pipe(SelectPipe(pipe_group)); else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
-			pipe_exist = true;
 			break;
 		}
 		case 4:
 		{
-			view_cs(cs);
+
+			if (cs_exist)  view_cs(SelectCS(cs_group)); else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
-			cs_exist = true;
 			break;
 		}
 		case 5:
 		{
-			if (pipe_exist) editing_pipe(pipe); else cout << "Вы забыли ввести данные трубы!";
+			if (pipe_exist) editing_pipe(SelectPipe(pipe_group)); else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
 			break;
 		}
 		case 6:
 		{
-			if (cs_exist) editing_cs(cs); else cout << "Вы забыли ввести данные КС!";
+			if (cs_exist) editing_cs(SelectCS(cs_group)); else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
 			break;
 		}
 		case 7:
 		{
-			if (pipe_exist) savePIPE_into_file(pipe); else cout << "Вы забыли ввести данные для трубы! \n";
+			ofstream fout;
+			fout.open("OutPut_Pipe.txt", ios::out);
+			if (fout.is_open())
+			{
+				for (Pipe pipe : pipe_group)
+					if (pipe_exist)
+						savePIPE_into_file(fout, pipe); else cout << "Вы забыли ввести данные для труб!\n";
+				fout.close();
+			}
 			system("Pause");
 			break;
 		}
 		case 8:
 		{
-			if (cs_exist) saveCS_into_file(cs); else cout << "Вы забыли ввести данные для КС! \n";
+			ofstream fout;
+			fout.open("OutPut_CS.txt", ios::out);
+			if (fout.is_open())
+			{
+				for (CS cs:cs_group)
+					if (cs_exist) 
+						saveCS_into_file(fout,cs); else cout << "Вы забыли ввести данные для КС!\n";
+				fout.close();
+			}	
 			system("Pause");
 			break;
 		}
 		case 9:
 		{
-			load_from_file(pipe, cs);
+			Pipe pipe;
+			ifstream fin;
+			fin.open("InPutPipe.txt", ios::in);
+				if (fin.is_open())
+				{
+					pipe_group.push_back(loadPipe_from_file(fin, pipe));
+					fin.close();
+				}
 			pipe_exist = true;
+			break;
+		}
+		case 10:
+		{
+			CS cs;
+			ifstream fin;
+			fin.open("InPutCS.txt", ios::in);
+				if (fin.is_open())
+				{
+					cs_group.push_back(loadCS_from_file(fin,cs));
+					fin.close();
+				}
 			cs_exist = true;
 			break;
 		}
