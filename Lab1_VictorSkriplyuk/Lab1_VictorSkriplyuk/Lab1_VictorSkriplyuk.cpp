@@ -2,15 +2,8 @@
 #include<fstream>
 #include <string>
 #include <vector>
+#include "Pipe.h"
 using namespace std;
-
-struct Pipe
-{
-	int id;
-	float length;
-	float diam;
-	bool repair;
-};
 
 struct CS
 {
@@ -41,25 +34,22 @@ void checking(T& var, string com, int left,int right)
 	} while (cin.fail() || !IsCorrect(var,left,right));
 }
 
-int GetCorrectNumber(int left, int right)
-{
-	int x;
-	while (((cin >> x)).fail() || !IsCorrect(x, left, right))
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "Ошибка при вводе!" << endl << "Введите команду: ";
-	}
-	return x;
-}
+//int GetCorrectNumber(int left, int right)
+//{
+//	int x;
+//	while (((cin >> x)).fail() || !IsCorrect(x, left, right))
+//	{
+//		cin.clear();
+//		cin.ignore(10000, '\n');
+//		cout << "Ошибка при вводе!" << endl << "Введите команду: ";
+//	}
+//	return x;
+//}
 
 
 void addpipe(Pipe& pipe)
 {
-	checking(pipe.id,"Введите идентификатор: ",0,100000);
-	checking(pipe.length, "Введите длину: ",0,200);
-	checking(pipe.diam, "Введите диаметр: ",0,200);
-	checking(pipe.repair, "Ремонт: ",0,1);
+	cin >> pipe;
 }
 
 void addcs(CS& cs)
@@ -80,11 +70,7 @@ void addcs(CS& cs)
 void view_pipe(const Pipe& pipe)
 {
 	cout << endl;
-	cout << "Труба" << endl;
-	cout << "Идентификатор: " << pipe.id << endl;
-	cout << "Длина: " << pipe.length << endl;
-	cout << "Диаметр: " << pipe.diam << endl;
-	cout << "Ремонт: " << pipe.repair << endl;
+	cout << pipe << endl;
 }
 
 void view_cs(const CS& cs)
@@ -133,32 +119,34 @@ void editing_cs(CS& cs)
 		}
 	}
  
-void savePIPE_into_file(ofstream& fout, const Pipe& pipe)
-{
-	fout << "Идентификатор: " << pipe.id << endl;
-	fout << "Длина: " << pipe.length << endl;
-	fout << "Диаметр: " << pipe.diam << endl;
-	fout << "Ремонт: " << pipe.repair << endl;
-}
+//void savePIPE_into_file(ofstream& fout, const Pipe& pipe)
+//{
+//	fout << pipe.id << ' ' << pipe.length << ' ' << pipe.diam << ' ' << pipe.repair;
+//
+//}
 
 
 void saveCS_into_file(ofstream& fout, const CS& cs)
 {
-	fout << "Идентификатор: " << cs.id << endl;
-	fout << "Название: " << cs.name << endl;
-	fout << "Количество цехов: " << cs.amount << endl;
-	fout << "Количество рабочих цехов: " << cs.amount_work << endl;
-	fout << "Эффективность: " << cs.perfomance << endl;
+	fout << cs.id << endl;
+	fout << cs.name << endl;
+	fout << cs.amount << endl;
+	fout << cs.amount_work << endl;
+	fout << cs.perfomance << endl;
 }
 
-void loadPipe_from_file(ifstream& fin, Pipe& pipe)
-{
-	fin >> pipe.id >> pipe.length >> pipe.diam >> pipe.repair;
-}
+//Pipe loadPipe_from_file(ifstream& fin)
+//{
+//	Pipe pipe;
+//	fin >> pipe.id >> pipe.length >> pipe.diam >> pipe.repair;
+//	return pipe;
+//}
 
-void loadCS_from_file(ifstream& fin, CS& cs)
+CS loadCS_from_file(ifstream& fin)
 {
+	CS cs;
 	fin >> cs.id >> cs.name >> cs.amount >> cs.amount_work >> cs.perfomance;
+	return cs;
 }
 
 void menu()
@@ -172,7 +160,9 @@ void menu()
 	cout << "6.Редактировать КС" << endl;
 	cout << "7.Сохранить трубу" << endl;
 	cout << "8.Сохранить КС" << endl;
-	cout << "9.Загрузить" << endl;
+	cout << "9.Загрузить трубы" << endl;
+	cout << "10.Загрузить КС" << endl;
+	cout << "11. Поиск труб по признаку repair" << endl;
 	cout << "0.Выход" << endl;
 	cout << "Введите команду: ";
 }
@@ -191,17 +181,36 @@ CS& SelectCS(vector<CS>& g)
 	return g[index - 1];
 }
 
+vector<int> FindPipesByRepair(const vector<Pipe>& pipe_group, bool rep="1")
+{
+	vector <int> res;
+	int i = 0;
+	for (auto& pipe : pipe_group)
+	{
+		if (pipe.repair == rep)
+			res.push_back(i);
+		i++;
+	}
+	return res;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
 	vector <Pipe> pipe_group;
 	vector <CS> cs_group;
+
+
+
+
 	bool pipe_exist = false;
 	bool cs_exist = false;
 	while (true)
 	{
 		menu();
-		switch (GetCorrectNumber(0,9))
+		int command = 0;
+		checking(command, "", 0, 11);
+		switch (command)
 		{
 		case 0:
 		{
@@ -226,14 +235,17 @@ int main()
 		}
 		case 3:
 		{
-			if (pipe_exist) view_pipe(SelectPipe(pipe_group)); else cout << "Вы забыли ввести данные трубы!\n";
+			Pipe pipe;
+			for (auto pipe:pipe_group)
+				if (pipe_exist) view_pipe(pipe); else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
 			break;
 		}
 		case 4:
 		{
-
-			if (cs_exist)  view_cs(SelectCS(cs_group)); else cout << "Вы забыли ввести данные КС!\n";
+			CS cs;
+			for (auto cs:cs_group)
+			if (cs_exist)  view_cs(cs); else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
 			break;
 		}
@@ -249,12 +261,13 @@ int main()
 			system("Pause");
 			break;
 		}
-		case 7:
+	/*	case 7:
 		{
 			ofstream fout;
-			fout.open("OutPut_Pipe.txt", ios::out);
+			fout.open("Data_Pipe.txt", ios::out);
 			if (fout.is_open())
 			{
+				fout << pipe_group.size() << endl;
 				for (Pipe pipe : pipe_group)
 					if (pipe_exist)
 						savePIPE_into_file(fout, pipe); else cout << "Вы забыли ввести данные для труб!\n";
@@ -262,13 +275,14 @@ int main()
 			}
 			system("Pause");
 			break;
-		}
+		}*/
 		case 8:
 		{
 			ofstream fout;
-			fout.open("OutPut_CS.txt", ios::out);
-			if (fout.is_open())
+			fout.open("Data_CS.txt", ios::out);
+			if (fout.is_open()) 
 			{
+				fout << cs_group.size() << endl;
 				for (CS cs:cs_group)
 					if (cs_exist) 
 						saveCS_into_file(fout,cs); else cout << "Вы забыли ввести данные для КС!\n";
@@ -277,30 +291,40 @@ int main()
 			system("Pause");
 			break;
 		}
-		case 9:
+		/*case 9:
 		{
 			Pipe pipe;
 			ifstream fin;
-			fin.open("InPutPipe.txt", ios::in);
+			fin.open("Data_Pipe.txt", ios::in);
 				if (fin.is_open())
 				{
-					pipe_group.push_back(loadPipe_from_file(fin, pipe));
+					int count;
+					fin >> count;
+					pipe_group.reserve(count);
+					for (count; count>0; count--) 
+						pipe_group.push_back(loadPipe_from_file(fin));
 					fin.close();
 				}
 			pipe_exist = true;
 			break;
-		}
+		}*/
 		case 10:
 		{
 			CS cs;
 			ifstream fin;
-			fin.open("InPutCS.txt", ios::in);
+			fin.open("Data_CS.txt", ios::in);
 				if (fin.is_open())
 				{
-					cs_group.push_back(loadCS_from_file(fin,cs));
+					cs_group.push_back(loadCS_from_file(fin));
 					fin.close();
 				}
 			cs_exist = true;
+			break;
+		}
+		case 11:
+		{
+			for (int i : FindPipesByRepair(pipe_group))
+				cout<<pipe_group[i];
 			break;
 		}
 		}
