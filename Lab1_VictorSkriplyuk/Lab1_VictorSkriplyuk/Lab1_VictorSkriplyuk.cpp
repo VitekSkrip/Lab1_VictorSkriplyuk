@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Pipe.h"
+#include "utils.h"
 using namespace std;
 
 struct CS
@@ -15,24 +16,24 @@ struct CS
 };
 
 
-template <typename T>
-bool IsCorrect(T& var, int left, int right)
-{
-	return var >= left && var <= right;
-}
+//template <typename T>
+//bool IsCorrect(T& var, int left, int right)
+//{
+//	return var >= left && var <= right;
+//}
 
-template <typename T>       // шаблон "template" - для работы с обобщенным типом данных
-							//нашел по ссылке - http://cppstudio.com/post/5188/ 
-void checking(T& var, string com, int left,int right)
-{
-	do
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << com;
-		cin >> var;
-	} while (cin.fail() || !IsCorrect(var,left,right));
-}
+//template <typename T>       // шаблон "template" - для работы с обобщенным типом данных
+//							нашел по ссылке - http://cppstudio.com/post/5188/ 
+//void checking(T& var, string com, int left,int right)
+//{
+//	do
+//	{
+//		cin.clear();
+//		cin.ignore(10000, '\n');
+//		cout << com;
+//		cin >> var;
+//	} while (cin.fail() || !IsCorrect(var,left,right));
+//}
 
 //int GetCorrectNumber(int left, int right)
 //{
@@ -47,14 +48,14 @@ void checking(T& var, string com, int left,int right)
 //}
 
 
-void addpipe(Pipe& pipe)
-{
-	cin >> pipe;
-}
+//void addpipe(Pipe& pipe)
+//{
+//	cin >> pipe;
+//}
 
 void addcs(CS& cs)
 {
-	checking(cs.id, "Введите идентификатор: ",0, 10000);
+	checking(cs.id,"Введите идентификатор: ",0, 10000);
 
 	cout << "Введите название: ";
 	cin.clear();
@@ -200,9 +201,6 @@ int main()
 	vector <Pipe> pipe_group;
 	vector <CS> cs_group;
 
-
-
-
 	bool pipe_exist = false;
 	bool cs_exist = false;
 	while (true)
@@ -219,7 +217,7 @@ int main()
 		case 1:
 		{
 			Pipe pipe;
-			addpipe(pipe);
+			cin >> pipe;
 			pipe_exist = true;
 			pipe_group.push_back(pipe);
 			break;
@@ -261,7 +259,7 @@ int main()
 			system("Pause");
 			break;
 		}
-	/*	case 7:
+		/*case 7:
 		{
 			ofstream fout;
 			fout.open("Data_Pipe.txt", ios::out);
@@ -291,7 +289,7 @@ int main()
 			system("Pause");
 			break;
 		}
-		/*case 9:
+	/*	case 9:
 		{
 			Pipe pipe;
 			ifstream fin;
