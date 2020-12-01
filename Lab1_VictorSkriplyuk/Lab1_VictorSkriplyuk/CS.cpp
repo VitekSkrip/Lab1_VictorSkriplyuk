@@ -17,30 +17,10 @@ int CS::GetId()
 
 void CS::editing_cs()
 {
+	cout << "Введите новое количество рабочих цехов: ";
 	amount_work = checking(0, amount, "Введите новое количество рабочих цехов: ");
 }
-		/*if (amount_work + 1 <= amount)
-		{
-			amount_work++;
-			cout << "Новое количество рабочих цехов: " << amount_work << endl;
-		}
-		else
-		{
-			cout << "Нельзя запустить цех!" << endl;
-		}
-	}
-	else
-	{
-		if (amount_work - 1 >= 0)
-		{
-			amount_work--;
-			cout << "Новое количество рабочих цехов: " << amount_work << endl;
-		}
-		else
-		{
-			cout << "Нельля прекратить работу цехов!" << endl;
-		}*/
-
+		
 ostream& operator << (ostream& out, const CS& cs)
 {
 	//out << "MaxID" << CS::MaxID << endl;

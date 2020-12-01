@@ -9,42 +9,6 @@
 #include "map"
 using namespace std;
 
-//void editing_pipe(Pipe& pipe)
-//	{
-//		cout << "Ремонт: ";
-//		pipe.repair = checking(0,1,"Ремонт:");
-//	}
-
-//void editing_cs(CS& cs)
-//	{
-//		int x;
-//		cout << "Запуск цеха - 1; Остановка цеха - 0\n" << endl;
-//		x = checking(0, 1, "Введите 1 - запуск цеха; 0 - остановка\n");
-//		if (x == 1)
-//		{
-//			if (cs.amount_work + 1 <= cs.amount)
-//			{
-//				cs.amount_work++;
-//				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
-//			}
-//			else
-//			{
-//				cout << "Нельзя запустить цех!" << endl;
-//			}
-//		}
-//		else
-//		{
-//			if (cs.amount_work-1 >= 0)
-//			{
-//				cs.amount_work--;
-//				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
-//			}
-//			else
-//			{
-//				cout << "Нельля прекратить работу цехов!" << endl;
-//			}
-//		}
-//	}
 
 void delete_pipe(unordered_map<int,Pipe>& pipe_group)
 {
@@ -52,7 +16,7 @@ void delete_pipe(unordered_map<int,Pipe>& pipe_group)
 	unsigned int index;
 	cout << "Введите ID трубы, которую нужно удалить: ";
 	index = checking(1u, pipe_group.size(), "Введите ID трубы, которую нужно удалить: ");
-	number = pipe_group.find(index-1);
+	number = pipe_group.find(index);
 	pipe_group.erase(number);
 }
 
@@ -62,7 +26,7 @@ void delete_cs(unordered_map<int, CS>& cs_group)
 	unsigned int index;
 	cout << "Введите ID КС, которую нужно удалить: ";
 	index = checking(1u, cs_group.size(), "Введите ID КС, которую нужно удалить: ");
-	number = cs_group.find(index - 1);
+	number = cs_group.find(index);
 	cs_group.erase(number);
 }
  
@@ -77,7 +41,6 @@ string file_name()
 
 void menu()
 {
-	//system("cls");
 	cout << "1.Добавить трубу" << endl;
 	cout << "2.Добавить КС" << endl;
 	cout << "3.Просмотр информации о трубе" << endl;
@@ -93,25 +56,10 @@ void menu()
 	cout << "13. Поиск КС по названию" << endl;
 	cout << "14. Удалить трубу" << endl;
 	cout << "15. Удалить КС" << endl;
+	cout << "16. Пакетное редактирование труб (repair)" << endl;
 
 	cout << "0.Выход" << endl;
 }
-
-//Pipe& SelectPipe(vector<Pipe>& g)
-//{
-//	unsigned int index;
-//	cout << "Введите индекс: ";
-//	index = checking(1u, g.size(),"Введите индекс: ");
-//	return g[index-1];
-//}
-//
-//CS& SelectCS(unordered_map<int,CS>& cs_group)
-//{
-//	unsigned int index;
-//	cout << "Введите ID КС: ";
-//	index = checking(1u, cs_group.size(), "Введите ID КС: ");
-//	return cs_group[index - 1];
-//}
 
 template<typename T>
 using FilterPipe = bool(*)(const Pipe& pipe, T param);
@@ -173,7 +121,7 @@ int main()
 		menu();
 		int command;
 		cout << "Введите команду: ";
-		command = checking(0, 15, "Введите команду: ");
+		command = checking(0, 16, "Введите команду: ");
 		switch (command)
 		{
 		case 0:
@@ -226,7 +174,7 @@ int main()
 			if (pipe_group.size() > 0)
 			{ 
 				unsigned index = checking(1u, pipe_group.size(), "Введите ID трубы: ");
-				number = pipe_group.find(index-1);
+				number = pipe_group.find(index);
 				number->second.editing_pipe();
 			}
 			else cout << "Вы забыли ввести данные трубы!\n";
@@ -240,7 +188,7 @@ int main()
 			if (cs_group.size() > 0) 
 			{
 				unsigned index = checking(1u, cs_group.size(), "Введите ID КС: ");
-				number = cs_group.find(index - 1);
+				number = cs_group.find(index);
 				number->second.editing_cs();
 			}
 			else cout << "Вы забыли ввести данные КС!\n";
@@ -385,6 +333,27 @@ int main()
 		{
 			if (cs_group.size() > 0)
 				delete_cs(cs_group); else cout << "Вы забыли ввести КС!" << endl;
+			break;
+		}
+		case 16:
+		{
+			unsigned int k;
+			k = 0;
+			bool rep;
+			cout << "Repair filter(1 or 0): ";
+			rep = checking(0, 1, "Repair filter(1 or 0): ");
+			if (pipe_group.size() != 0)
+			{
+				for (int& i : Find_Pipe_ByFilter(pipe_group, CheckByRepair, rep))
+				{
+					k = k + 1;
+					cout << "Редактирование " << k << "-й найденной трубы" << endl;
+					pipe_group[i].editing_pipe();
+				}
+			}
+			else
+				cout << "Забыли добавить трубы" << endl;
+			system("pause");
 			break;
 		}
 		}

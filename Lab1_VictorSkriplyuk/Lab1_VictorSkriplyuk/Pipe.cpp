@@ -16,8 +16,8 @@ int Pipe::GetId()
 
 void Pipe::editing_pipe()
 {
-	cout << "Ремонт: ";
-	repair = checking(0, 1, "Ремонт:");
+	repair = !repair;
+	cout << "Successful editing to " << repair << endl;
 }
 ostream& operator << (ostream& out, const Pipe& pipe)
 {
