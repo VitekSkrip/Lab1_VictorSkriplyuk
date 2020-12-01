@@ -1,5 +1,6 @@
 #pragma once 
 #include <iostream>
+#include <fstream>
 class Pipe
 {
 	int id;
@@ -11,10 +12,9 @@ public:
 	bool repair;
 	
 	friend std::ostream& operator << (std::ostream& out, const Pipe& pipe);
-	friend std::istream& operator >> (std::istream& in, const Pipe& pipe);
-	template <typename T>
-	friend void checking(T& var, std::string com, int left, int right);
-	/*friend void savePIPE_into_file(ofstream& fout, const Pipe& pipe);
-	friend Pipe loadPipe_from_file(ifstream& fin);*/
+	friend std::istream& operator >> (std::istream& in, Pipe& pipe);
+	friend std::ofstream& operator << (std::ofstream& fout, const Pipe& pipe);
+	friend std::ifstream& operator >> (std::ifstream& fin, Pipe& pipe);
+	
 };
 

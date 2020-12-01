@@ -1,20 +1,22 @@
 #pragma once
 #include <iostream>
+#include <string>
 
 template <typename T>
-bool IsCorrect(T& var, int left, int right)
+bool IsCorrect(T var, T left, T right)
 {
 	return var >= left && var <= right;
 }
 
 template <typename T>
-void checking(T& var, std::string com, int left, int right)
+T checking(T left, T right, std::string message)
 {
-	do
+	T var;
+	while ((std::cin >> var).fail() || !IsCorrect(var, left, right))
 	{
 		std::cin.clear();
-		std::cin.ignore(10000, '\n');
-		std::cout << com;
-		std::cin >> var;
-	} while (std::cin.fail() || !IsCorrect(var,left,right));
+		std::cin.ignore(1000, '\n');
+		std::cout << message;
+	} 
+	return var;
 }
