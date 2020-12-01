@@ -6,44 +6,45 @@
 #include "CS.h"
 #include "utils.h"
 #include "unordered_map"
+#include "map"
 using namespace std;
 
-void editing_pipe(Pipe& pipe)
-	{
-		cout << "Ремонт: ";
-		pipe.repair = checking(0,1,"Ремонт:");
-	}
+//void editing_pipe(Pipe& pipe)
+//	{
+//		cout << "Ремонт: ";
+//		pipe.repair = checking(0,1,"Ремонт:");
+//	}
 
-void editing_cs(CS& cs)
-	{
-		int x;
-		cout << "Запуск цеха - 1; Остановка цеха - 0\n" << endl;
-		x = checking(0, 1, "Введите 1 - запуск цеха; 0 - остановка\n");
-		if (x == 1)
-		{
-			if (cs.amount_work + 1 <= cs.amount)
-			{
-				cs.amount_work++;
-				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
-			}
-			else
-			{
-				cout << "Нельзя запустить цех!" << endl;
-			}
-		}
-		else
-		{
-			if (cs.amount_work-1 >= 0)
-			{
-				cs.amount_work--;
-				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
-			}
-			else
-			{
-				cout << "Нельля прекратить работу цехов!" << endl;
-			}
-		}
-	}
+//void editing_cs(CS& cs)
+//	{
+//		int x;
+//		cout << "Запуск цеха - 1; Остановка цеха - 0\n" << endl;
+//		x = checking(0, 1, "Введите 1 - запуск цеха; 0 - остановка\n");
+//		if (x == 1)
+//		{
+//			if (cs.amount_work + 1 <= cs.amount)
+//			{
+//				cs.amount_work++;
+//				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
+//			}
+//			else
+//			{
+//				cout << "Нельзя запустить цех!" << endl;
+//			}
+//		}
+//		else
+//		{
+//			if (cs.amount_work-1 >= 0)
+//			{
+//				cs.amount_work--;
+//				cout << "Новое количество рабочих цехов: " << cs.amount_work << endl;
+//			}
+//			else
+//			{
+//				cout << "Нельля прекратить работу цехов!" << endl;
+//			}
+//		}
+//	}
 
 void delete_pipe(unordered_map<int,Pipe>& pipe_group)
 {
@@ -96,21 +97,21 @@ void menu()
 	cout << "0.Выход" << endl;
 }
 
-Pipe& SelectPipe(vector<Pipe>& g)
-{
-	unsigned int index;
-	cout << "Введите индекс: ";
-	index = checking(1u, g.size(),"Введите индекс: ");
-	return g[index-1];
-}
-
-CS& SelectCS(vector<CS>& g)
-{
-	unsigned int index;
-	cout << "Введите индекс: ";
-	index = checking(1u, g.size(), "Введите индекс: ");
-	return g[index - 1];
-}
+//Pipe& SelectPipe(vector<Pipe>& g)
+//{
+//	unsigned int index;
+//	cout << "Введите индекс: ";
+//	index = checking(1u, g.size(),"Введите индекс: ");
+//	return g[index-1];
+//}
+//
+//CS& SelectCS(unordered_map<int,CS>& cs_group)
+//{
+//	unsigned int index;
+//	cout << "Введите ID КС: ";
+//	index = checking(1u, cs_group.size(), "Введите ID КС: ");
+//	return cs_group[index - 1];
+//}
 
 template<typename T>
 using FilterPipe = bool(*)(const Pipe& pipe, T param);
@@ -141,8 +142,8 @@ vector<int> Find_Pipe_ByFilter(const unordered_map<int, Pipe>& pipe_group, Filte
 	res.reserve(pipe_group.size());
 	for (const auto& pipe : pipe_group)
 	{
-		if (f(pipe_group.second, param))
-			res.push_back(pipe_group.first);
+		if (f(pipe.second, param))
+			res.push_back(pipe.first);
 	}
 	return res;
 }
@@ -154,8 +155,8 @@ vector<int> Find_CS_ByFilter(const unordered_map<int, CS>& cs_group, FilterCS<T>
 	res.reserve(cs_group.size());
 	for (const auto& cs : cs_group)
 	{
-		if (f(cs_group.second, param))
-			res.push_back(cs_group.first);
+		if (f(cs.second, param))
+			res.push_back(cs.first);
 	}
 	return res;
 }
@@ -181,26 +182,26 @@ int main()
 		}
 		case 1:
 		{
-			//Pipe pipe;
-			//cin >> pipe;
-			pipe_group.insert(pair<int, Pipe>(Pipe::MaxID, Pipe()));
+			Pipe pipe;
+			cin >> pipe;
+			pipe_group.insert(pair<int, Pipe>(pipe.GetId(), pipe));
 			break;
 		}
 		case 2:
 		{
-			//CS cs;
-			//cin >> cs;
-			cs_group.insert(pair<int, CS>(CS::MaxID, CS()));
+			CS cs;
+			cin >> cs;
+			cs_group.insert(pair<int, CS>(cs.GetId(), cs));
 			break;
 
 		}
 		case 3:
 		{
 			if (pipe_group.size() > 0)
-				for (auto iter=pipe.begin() : pipe_group)
+				for (auto iter=pipe_group.begin();iter!=pipe_group.end();++iter)
 			{
 					cout << endl;
-					cout << pipe << endl;
+					cout << iter->second << endl;
 			}
 			else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
@@ -209,10 +210,10 @@ int main()
 		case 4:
 		{
 			if (cs_group.size() > 0)
-				for (auto cs : cs_group)
+				for (auto iter = cs_group.begin(); iter != cs_group.end(); ++iter)
 				{
 					cout << endl;
-					cout << cs << endl;
+					cout << iter->second << endl;
 				}	
 			else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
@@ -220,13 +221,29 @@ int main()
 		}
 		case 5:
 		{
-			if (pipe_group.size() > 0) editing_pipe(SelectPipe(pipe_group)); else cout << "Вы забыли ввести данные трубы!\n";
+			unordered_map <int, Pipe>::iterator number;
+			cout << "Введите ID трубы: ";
+			if (pipe_group.size() > 0)
+			{ 
+				unsigned index = checking(1u, pipe_group.size(), "Введите ID трубы: ");
+				number = pipe_group.find(index-1);
+				number->second.editing_pipe();
+			}
+			else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
 			break;
 		}
 		case 6:
 		{
-			if (cs_group.size() > 0) editing_cs(SelectCS(cs_group)); else cout << "Вы забыли ввести данные КС!\n";
+			unordered_map <int, CS>::iterator number;
+			cout << "Введите ID КС: ";
+			if (cs_group.size() > 0) 
+			{
+				unsigned index = checking(1u, cs_group.size(), "Введите ID КС: ");
+				number = cs_group.find(index - 1);
+				number->second.editing_cs();
+			}
+			else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
 			break;
 		}
@@ -239,8 +256,8 @@ int main()
 				if (pipe_group.size() > 0)
 				{
 				fout << pipe_group.size() << endl;
-				for (Pipe pipe : pipe_group)
-						fout << pipe;
+				for (auto iter=pipe_group.begin(); iter != pipe_group.end();++iter)
+						fout << iter->second;
 				}
 				else cout << "Вы забыли ввести данные для труб!\n";
 				fout.close();
@@ -258,9 +275,10 @@ int main()
 				if (cs_group.size() > 0)
 				{
 				fout << cs_group.size() << endl;
-				for (CS cs : cs_group)
-						fout << cs; 
-				}else cout << "Вы забыли ввести данные для КС!\n";
+				for (auto iter=cs_group.begin(); iter!=cs_group.end();++iter)
+						fout << iter->second; 
+				}
+				else cout << "Вы забыли ввести данные для КС!\n";
 				fout.close();
 			}
 			else cout << "Файл не открыт" << endl;
@@ -273,14 +291,15 @@ int main()
 			fin.open(file_name(), ios::in);
 			if (fin.is_open())
 			{
+				pipe_group.erase(pipe_group.begin(), pipe_group.end());
 				int count;
 				fin >> count;
-				pipe_group.resize(count);
-				for (Pipe& pipe : pipe_group)
+				for (int i=1; i<=count;++i)
 				{
+					Pipe pipe;
 					fin >> pipe;
+					pipe_group.insert(pair<int, Pipe>(pipe.GetId(), pipe));
 				}
-
 				fin.close();
 			}
 			else cout << "Файл не открыт" << endl;
@@ -292,12 +311,14 @@ int main()
 			fin.open(file_name(), ios::in);
 			if (fin.is_open())
 			{
+				cs_group.erase(cs_group.begin(), cs_group.end());
 				int count;
 				fin >> count;
-				cs_group.resize(count);
-				for (CS& cs : cs_group)
+				for (int i=1; i<=count;++i)
 				{
+					CS cs;
 					fin >> cs;
+					cs_group.insert(pair<int, CS>(cs.GetId(), cs));
 				}
 
 				fin.close();

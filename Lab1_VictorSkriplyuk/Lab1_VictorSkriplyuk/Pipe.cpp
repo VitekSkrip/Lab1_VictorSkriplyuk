@@ -9,6 +9,16 @@ Pipe::Pipe()
 	id = ++MaxID;
 }
 
+int Pipe::GetId()
+{
+	return id;
+}
+
+void Pipe::editing_pipe()
+{
+	cout << "Ремонт: ";
+	repair = checking(0, 1, "Ремонт:");
+}
 ostream& operator << (ostream& out, const Pipe& pipe)
 {
 	//out << "MaxID" << Pipe::MaxID << endl;
