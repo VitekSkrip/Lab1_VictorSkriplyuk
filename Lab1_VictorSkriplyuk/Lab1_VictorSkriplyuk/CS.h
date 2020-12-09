@@ -3,16 +3,23 @@
 #include <fstream>
 class CS
 {
+	static unsigned int MaxID;
 	int id;
-public:
-	CS();
-	static int MaxID;
-	std::string name;
 	int amount;
 	int amount_work;
 	float perfomance;
+	std::string name;
+
+public:
+	CS();
 	void editing_cs();
 	int GetId();
+	static unsigned int GetMaxID();
+	int Get_amount();
+	int Get_amount_work();
+	std::string Get_Name();
+	
+
 
 	friend std::ostream& operator << (std::ostream & out, const CS & cs);
 	friend std::istream& operator >> (std::istream & in, CS & cs);

@@ -61,54 +61,37 @@ void menu()
 	cout << "0.Выход" << endl;
 }
 
-template<typename T>
-using FilterPipe = bool(*)(const Pipe& pipe, T param);
+template<typename PC,typename T>
+using Filter = bool(*)(PC& pc, T param);
 
-template<typename T>
-using FilterCS = bool(*)(const CS& cs, T param);
-
-
-bool CheckByName(const CS& cs, string param)
+bool CheckByName(CS& cs, string param)
 {
-	return cs.name == param;
+	return cs.Get_Name() == param;
 }
 
-bool CheckByRepair(const Pipe& pipe, bool repair)
+bool CheckByRepair(Pipe& pipe, bool repair)
 {
-	return pipe.repair == repair;
+	return pipe.GetRepair() == repair;
 }
 
-bool CheckBy_Notworking_CS(const CS& cs, float percent)
+bool CheckBy_Notworking_CS(CS& cs, float percent)
 {
-	return percent > ((cs.amount - cs.amount_work) / cs.amount * 100);
+	return percent > ((cs.Get_amount() - cs.Get_amount_work()) / cs.Get_amount() * 100);
 }
 
-template<typename T>
-vector<int> Find_Pipe_ByFilter(const unordered_map<int, Pipe>& pipe_group, FilterPipe<T> f, T param)
+
+template<typename PC,typename T>
+vector<int> Find_PipeOrCS_ByFilter(unordered_map<int, PC>& pc, Filter<PC, T> f, T param)
 {
 	vector <int> res;
-	res.reserve(pipe_group.size());
-	for (const auto& pipe : pipe_group)
+	res.reserve(pc.size());
+	for (auto& pipe_or_cs : pc)
 	{
-		if (f(pipe.second, param))
-			res.push_back(pipe.first);
+		if (f(pipe_or_cs.second, param))
+			res.push_back(pipe_or_cs.first);
 	}
 	return res;
 }
-
-template<typename T>
-vector<int> Find_CS_ByFilter(const unordered_map<int, CS>& cs_group, FilterCS<T> f, T param)
-{
-	vector <int> res;
-	res.reserve(cs_group.size());
-	for (const auto& cs : cs_group)
-	{
-		if (f(cs.second, param))
-			res.push_back(cs.first);
-	}
-	return res;
-}
-
 
 int main()
 {
@@ -146,10 +129,10 @@ int main()
 		case 3:
 		{
 			if (pipe_group.size() > 0)
-				for (auto iter=pipe_group.begin();iter!=pipe_group.end();++iter)
+				for (auto iter:pipe_group)
 			{
 					cout << endl;
-					cout << iter->second << endl;
+					cout << iter.second << endl;
 			}
 			else cout << "Вы забыли ввести данные трубы!\n";
 			system("Pause");
@@ -158,10 +141,10 @@ int main()
 		case 4:
 		{
 			if (cs_group.size() > 0)
-				for (auto iter = cs_group.begin(); iter != cs_group.end(); ++iter)
+				for (auto iter:cs_group)
 				{
 					cout << endl;
-					cout << iter->second << endl;
+					cout << iter.second << endl;
 				}	
 			else cout << "Вы забыли ввести данные КС!\n";
 			system("Pause");
@@ -173,7 +156,7 @@ int main()
 			cout << "Введите ID трубы: ";
 			if (pipe_group.size() > 0)
 			{ 
-				unsigned index = checking(1u, pipe_group.size(), "Введите ID трубы: ");
+				unsigned index = checking(1u, Pipe::GetMaxID(), "Введите ID трубы: ");
 				number = pipe_group.find(index);
 				number->second.editing_pipe();
 			}
@@ -187,7 +170,7 @@ int main()
 			cout << "Введите ID КС: ";
 			if (cs_group.size() > 0) 
 			{
-				unsigned index = checking(1u, cs_group.size(), "Введите ID КС: ");
+				unsigned index = checking(1u, CS::GetMaxID(), "Введите ID КС: ");
 				number = cs_group.find(index);
 				number->second.editing_cs();
 			}
@@ -204,17 +187,27 @@ int main()
 				if (pipe_group.size() > 0)
 				{
 				fout << pipe_group.size() << endl;
-				for (auto iter=pipe_group.begin(); iter != pipe_group.end();++iter)
-						fout << iter->second;
+				for (auto iter:pipe_group)
+						fout << iter.second;
 				}
 				else cout << "Вы забыли ввести данные для труб!\n";
+
+				if (cs_group.size() > 0)
+				{
+					fout << cs_group.size() << endl;
+					for (auto iter : cs_group)
+						fout << iter.second;
+				}
+				else cout << "Вы забыли ввести данные для КС!\n";
+				fout.close();
+
 				fout.close();
 			}
 			else cout << "Файл не открыт" << endl;
 			system("Pause");
 			break;
 		}
-		case 8:
+		/*case 8:
 		{
 			ofstream fout;
 			fout.open(file_name(), ios::out);
@@ -223,8 +216,8 @@ int main()
 				if (cs_group.size() > 0)
 				{
 				fout << cs_group.size() << endl;
-				for (auto iter=cs_group.begin(); iter!=cs_group.end();++iter)
-						fout << iter->second; 
+				for (auto iter:cs_group)
+						fout << iter.second; 
 				}
 				else cout << "Вы забыли ввести данные для КС!\n";
 				fout.close();
@@ -232,7 +225,7 @@ int main()
 			else cout << "Файл не открыт" << endl;
 			system("Pause");
 			break;
-		}
+		}*/
 		case 9:
 		{
 			ifstream fin;
@@ -281,7 +274,7 @@ int main()
 			rep = checking(0, 1, "Repair filter(1 or 0): ");
 			if (pipe_group.size() != 0)
 			{
-				for (int i : Find_Pipe_ByFilter(pipe_group, CheckByRepair, rep))
+				for (int i : Find_PipeOrCS_ByFilter(pipe_group, CheckByRepair, rep))
 					cout << pipe_group[i];
 			}
 			else
@@ -297,7 +290,7 @@ int main()
 			if (cs_group.size() != 0)
 			{
 
-				for (int i : Find_CS_ByFilter(cs_group, CheckBy_Notworking_CS, perc))
+				for (int i : Find_PipeOrCS_ByFilter(cs_group, CheckBy_Notworking_CS, perc))
 					cout << cs_group[i];
 			}
 			else
@@ -314,7 +307,7 @@ int main()
 			getline(cin, name);
 			if (cs_group.size() != 0)
 			{
-				for (int i : Find_CS_ByFilter(cs_group, CheckByName, name))
+				for (int i : Find_PipeOrCS_ByFilter(cs_group, CheckByName, name))
 					cout << cs_group[i];
 			}
 			else
@@ -344,7 +337,7 @@ int main()
 			rep = checking(0, 1, "Repair filter(1 or 0): ");
 			if (pipe_group.size() != 0)
 			{
-				for (int& i : Find_Pipe_ByFilter(pipe_group, CheckByRepair, rep))
+				for (int& i : Find_PipeOrCS_ByFilter(pipe_group, CheckByRepair, rep))
 				{
 					k = k + 1;
 					cout << "Редактирование " << k << "-й найденной трубы" << endl;

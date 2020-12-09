@@ -2,7 +2,7 @@
 #include "utils.h"
 using namespace std;
 
-int Pipe::MaxID = 0;
+unsigned int Pipe::MaxID = 0;
 
 Pipe::Pipe()
 {
@@ -13,6 +13,17 @@ int Pipe::GetId()
 {
 	return id;
 }
+
+unsigned int Pipe::GetMaxID()
+{
+	return MaxID;
+}
+
+bool Pipe::GetRepair()
+{
+	return repair;
+}
+
 
 void Pipe::editing_pipe()
 {

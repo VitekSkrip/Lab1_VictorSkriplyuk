@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-int CS::MaxID = 0;
+unsigned int CS::MaxID = 0;
 
 CS::CS()
 {
@@ -13,6 +13,26 @@ CS::CS()
 int CS::GetId()
 {
 	return id;
+}
+
+unsigned int CS::GetMaxID()
+{
+	return MaxID;
+}
+
+int CS::Get_amount()
+{
+	return amount;
+}
+
+int CS::Get_amount_work()
+{
+	return amount_work;
+}
+
+std::string CS::Get_Name()
+{
+	return name;
 }
 
 void CS::editing_cs()

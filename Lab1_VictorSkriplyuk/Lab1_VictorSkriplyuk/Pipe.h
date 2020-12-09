@@ -3,15 +3,18 @@
 #include <fstream>
 class Pipe
 {
+	
 	int id;
-public:
-	Pipe();
-	static int MaxID;
+	static unsigned int MaxID;
 	float length;
 	float diam;
 	bool repair;
+public:
+	Pipe();
 	void editing_pipe();
 	int GetId();
+	static unsigned int GetMaxID();
+	bool GetRepair();
 	
 	friend std::ostream& operator << (std::ostream& out, const Pipe& pipe);
 	friend std::istream& operator >> (std::istream& in, Pipe& pipe);
