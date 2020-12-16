@@ -60,7 +60,10 @@ void menu()
 	cout << "16. Просмотр графа" << endl;
 	cout << "17. Сохранить граф в файл" << endl;
 	cout << "18. Загрузить граф из файла" << endl;
-	cout << "19. Топологическая сортировка графа" << endl;
+	cout << "19. Удалить граф" << endl;
+	cout << "20. Топологическая сортировка графа" << endl;
+	cout << "21. Удалить КС из графа" << endl;
+
 
 
 	cout << "0.Выход" << endl;
@@ -109,6 +112,24 @@ p_id_in AddConnection(int& pipe_id, int& cs_id_in)
 	pair.pipe_id = pipe_id;
 	pair.cs_id_in = cs_id_in;
 	return pair;
+}
+
+void cs_delete_fromGraph(unordered_map<int, vector<p_id_in>>& graph, unordered_map<int, CS>& cs_group, int& cs_id)
+{
+
+	if (graph.find(cs_id) != graph.end())
+	{
+		graph.erase(cs_id);
+	}
+	for (auto el = graph.begin(); el != graph.end(); el++)
+	{
+		for (auto i = 0; i < el->second.size(); i++)
+		{
+			if (el->second[i].cs_id_in == cs_id)
+				el->second.erase(el->second.begin() + i);
+
+		}
+	}
 }
 
 template <typename T>
@@ -261,7 +282,7 @@ int main()
 		menu();
 		int command;
 		cout << "Введите команду: ";
-		command = checking(0, 18, "Введите команду: ");
+		command = checking(0, 21, "Введите команду: ");
 		switch (command)
 		{
 		case 0:
@@ -534,6 +555,12 @@ int main()
 		}
 		case 19:
 		{
+			graph.clear();
+			cout << "Граф удален" << endl;
+			break;
+		}
+		case 20:
+		{
 			vector<int> ans;
 			topological_sort(graph, ans);
 			for (auto index = ans.begin(); index != ans.end(); index++)
@@ -542,6 +569,13 @@ int main()
 				if (index + 1 != ans.end())
 					cout << " - ";
 			}
+			break;
+		}
+		case 21:
+		{
+			cout << "Введите id КС, которую хотите удалить из графа: ";
+			int cs_id_delete = checking(1u, CS::GetMaxID(), "Введите id КС, которую хотите удалить из графа: ");
+			cs_delete_fromGraph(graph, cs_group, cs_id_delete);
 			break;
 		}
 		}
