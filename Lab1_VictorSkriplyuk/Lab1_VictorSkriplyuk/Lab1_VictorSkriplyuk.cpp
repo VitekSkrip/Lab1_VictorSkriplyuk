@@ -116,7 +116,6 @@ p_id_in AddConnection(int& pipe_id, int& cs_id_in)
 
 void cs_delete_fromGraph(unordered_map<int, vector<p_id_in>>& graph, unordered_map<int, CS>& cs_group, int& cs_id)
 {
-
 	if (graph.find(cs_id) != graph.end())
 	{
 		graph.erase(cs_id);
