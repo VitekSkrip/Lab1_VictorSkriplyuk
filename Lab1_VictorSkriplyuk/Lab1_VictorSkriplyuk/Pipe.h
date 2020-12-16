@@ -3,7 +3,6 @@
 #include <fstream>
 class Pipe
 {
-	
 	int id;
 	static unsigned int MaxID;
 	float length;
@@ -12,7 +11,14 @@ class Pipe
 public:
 	Pipe();
 	void editing_pipe();
+	int id_cs_in;
+	int id_cs_out;
 	int GetId();
+	int GetId_CS_In();
+	int GetId_CS_Out();
+	void SetId_CS_Out(int id_cs_out);
+	void SetId_CS_In(int id_cs_in);
+	void in_Pipe_out(int cs_out,int cs_in);
 	static unsigned int GetMaxID();
 	bool GetRepair();
 	

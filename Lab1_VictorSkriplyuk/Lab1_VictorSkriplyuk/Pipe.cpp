@@ -4,14 +4,43 @@ using namespace std;
 
 unsigned int Pipe::MaxID = 0;
 
+
 Pipe::Pipe()
 {
 	id = ++MaxID;
+	id_cs_in = 0;
+	id_cs_out = 0;
 }
 
 int Pipe::GetId()
 {
 	return id;
+}
+
+int Pipe::GetId_CS_In()
+{
+	return id_cs_in;
+}
+
+int Pipe::GetId_CS_Out()
+{
+	return id_cs_out;
+}
+
+void Pipe::SetId_CS_Out(int id_cs_out)
+{
+	this->id_cs_out=id_cs_out;
+}
+
+void Pipe::SetId_CS_In(int id_cs_in)
+{
+	this->id_cs_in = id_cs_in;
+}
+
+void Pipe::in_Pipe_out(int cs_out, int cs_in)
+{
+	id_cs_out = cs_out;
+	id_cs_in = cs_in;
 }
 
 unsigned int Pipe::GetMaxID()
