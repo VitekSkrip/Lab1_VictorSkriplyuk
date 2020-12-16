@@ -41,6 +41,7 @@ string file_name()
 
 void menu()
 {
+	cout << endl;
 	cout << "1.Добавить трубу" << endl;
 	cout << "2.Добавить КС" << endl;
 	cout << "3.Просмотр информации о трубе" << endl;
@@ -57,6 +58,10 @@ void menu()
 	cout << "14. Пакетное редактирование труб (repair)" << endl;
 	cout << "15. Создать граф" << endl;
 	cout << "16. Просмотр графа" << endl;
+	cout << "17. Сохранить граф в файл" << endl;
+	cout << "18. Загрузить граф из файла" << endl;
+	cout << "19. Топологическая сортировка графа" << endl;
+
 
 	cout << "0.Выход" << endl;
 }
@@ -140,7 +145,7 @@ unordered_map<int, vector<p_id_in>> CreateGraph(unordered_map<int, vector<p_id_i
 void SaveGraphToFile(unordered_map<int, vector<p_id_in>> graph)
 {
 	ofstream fout;
-	fout.open(file_name());
+	fout.open(file_name(), ios::out);
 	if (!fout.is_open())
 		cout << "Файл не открыт!" << endl;
 	else
@@ -149,9 +154,9 @@ void SaveGraphToFile(unordered_map<int, vector<p_id_in>> graph)
 		{
 			fout << el.second.size() << " ";
 			fout << el.first << " ";
-			for (auto cs = el.second.begin(); cs != el.second.end(); cs++)
+			for (auto cs = el.second.begin(); cs != el.second.end(); ++cs)
 			{
-				fout << cs->cs_id_in << " " << cs->cs_id_in << " ";
+				fout << cs->cs_id_in << " " << cs->pipe_id << " ";
 			}
 			fout << endl;
 		}
@@ -159,30 +164,35 @@ void SaveGraphToFile(unordered_map<int, vector<p_id_in>> graph)
 	}
 }
 
+void LoadGraphFromFile(unordered_map<int, vector<p_id_in>>& graph)
+{
+	ifstream fin(file_name());
+	if (!fin.is_open())
+		cout << "Файл не открыт!";
+	else
+	{
+		int count;
+		while (fin >> count)
+		{
+			int cs_id_out;
+			fin >> cs_id_out;
+			for (int i = 0; i < count; i++)
+			{
+				int cs_id_in;
+				fin >> cs_id_in;
+				int pipe_id;
+				fin >> pipe_id;
+				p_id_in pair;
+				pair.cs_id_in = cs_id_in;
+				pair.pipe_id = pipe_id;
+				graph[cs_id_out].push_back(pair);
+			}
+		}
+		fin.close();
+	}
+}
 
-//bool cyclic(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph, vector <int>& color) 
-//{ 
-//	// сolor: 0 - не посетили; 1 - посетили; 2 - вышли из вершины
-//	color[cs_id] = 1;
-//	for (size_t i = 0; i < graph[cs_id].size(); ++i) 
-//	{
-//		int to = graph[cs_id][i].cs_id_in;
-//		if (color[to] == 0) 
-//		{ 
-//			if (cyclic(to, cycle_status, graph, color))  
-//				return true;
-//		}
-//		else if (color[to] == 1)
-//		{
-//			cycle_status = to;
-//			return true;
-//		}
-//	}
-//	color[cs_id] = 2;
-//	return false;
-//}
-
-bool dfs(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph,  vector <int>& color, unordered_map<int, int>& used_cs, vector <int>& ans)
+bool dfs(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph,  unordered_map<int,char> color, unordered_map<int, int>& used_cs, vector <int>& ans)
 {
 	// сolor: 0 - не посетили; 1 - посетили; 2 - вышли из вершины
 	color[cs_id] = 1;
@@ -216,10 +226,11 @@ bool dfs(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph
 	return false;
 }
 
+
 void topological_sort(unordered_map<int, vector<p_id_in>>& graph, vector<int>& ans)
 {
 	ans.clear();
-	vector<int>color;
+	unordered_map<int,char> color;	
 	unordered_map<int, int> used_cs;
 	for (auto& i : graph)
 	{
@@ -229,13 +240,15 @@ void topological_sort(unordered_map<int, vector<p_id_in>>& graph, vector<int>& a
 	int cycle_status = -1;
 	for (auto& el : color)
 	{
-		if (dfs(el, cycle_status, graph, color, used_cs , ans))
+		if (dfs(el.first, cycle_status, graph, color, used_cs , ans))
 			break;
 	}
 	if (cycle_status == -1)
 		reverse(ans.begin(), ans.end());
 	else cout << "В графе присутствует цикл!";
 }
+
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
@@ -248,7 +261,7 @@ int main()
 		menu();
 		int command;
 		cout << "Введите команду: ";
-		command = checking(0, 16, "Введите команду: ");
+		command = checking(0, 18, "Введите команду: ");
 		switch (command)
 		{
 		case 0:
@@ -510,6 +523,17 @@ int main()
 		}
 		case 17:
 		{
+			SaveGraphToFile(graph);
+			break;
+
+		}
+		case 18:
+		{
+			LoadGraphFromFile(graph);
+			break;
+		}
+		case 19:
+		{
 			vector<int> ans;
 			topological_sort(graph, ans);
 			for (auto index = ans.begin(); index != ans.end(); index++)
@@ -520,7 +544,6 @@ int main()
 			}
 			break;
 		}
-
 		}
 	}
 }
