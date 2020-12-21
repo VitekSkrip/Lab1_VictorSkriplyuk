@@ -48,21 +48,19 @@ void menu()
 	cout << "4.Просмотр информации о КС" << endl;
 	cout << "5.Редактировать трубу" << endl;
 	cout << "6.Редактировать КС" << endl;
-	cout << "7.Сохранить" << endl;
-	cout << "8.Загрузить" << endl;
+	cout << "7.Сохранить все" << endl;
+	cout << "8.Загрузить все" << endl;
 	cout << "9. Поиск труб по признаку repair" << endl;
 	cout << "10. Поиск КС по проценту незадействованных цехов" << endl;
 	cout << "11. Поиск КС по названию" << endl;
 	cout << "12. Удалить трубу" << endl;
 	cout << "13. Удалить КС" << endl;
-	cout << "14. Пакетное редактирование труб (repair)" << endl;
-	cout << "15. Создать граф" << endl;
+	cout << "14. Пакетное редактирование труб" << endl;
+	cout << "15. Создать/изменить граф" << endl;
 	cout << "16. Просмотр графа" << endl;
-	cout << "17. Сохранить граф в файл" << endl;
-	cout << "18. Загрузить граф из файла" << endl;
-	cout << "19. Удалить граф" << endl;
-	cout << "20. Топологическая сортировка графа" << endl;
-	cout << "21. Удалить КС из графа" << endl;
+	cout << "17. Удалить граф" << endl;
+	cout << "18. Топологическая сортировка графа" << endl;
+	cout << "19. Удалить КС из графа" << endl;
 
 
 
@@ -100,6 +98,7 @@ vector<int> Find_PipeOrCS_ByFilter(unordered_map<int, PC>& pc, Filter<PC, T> f, 
 	}
 	return res;
 }
+
 struct p_id_in
 {
 	int cs_id_in;
@@ -120,12 +119,12 @@ void cs_delete_fromGraph(unordered_map<int, vector<p_id_in>>& graph, unordered_m
 	{
 		graph.erase(cs_id);
 	}
-	for (auto el = graph.begin(); el != graph.end(); el++)
+	for (auto iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		for (auto i = 0; i < el->second.size(); i++)
+		for (auto i = 0; i < iter->second.size(); i++)
 		{
-			if (el->second[i].cs_id_in == cs_id)
-				el->second.erase(el->second.begin() + i);
+			if (iter->second[i].cs_id_in == cs_id)
+				iter->second.erase(iter->second.begin() + i);
 
 		}
 	}
@@ -147,70 +146,6 @@ void Print_Graph(T graph)
 	}
 }
 
-unordered_map<int, vector<p_id_in>> CreateGraph(unordered_map<int, vector<p_id_in>>& graph, unordered_map<int, CS>& cs_group, unordered_map<int, Pipe>& pipe_group)
-{
-	for (auto iter = pipe_group.begin(); iter != pipe_group.end(); ++iter)
-	{
-		if (iter->second.GetId_CS_In()!=0)
-		{ 
-		int pipe_id = iter->second.GetId();
-		int cs_id_in = iter->second.GetId_CS_In();
-		int cs_id_out = iter->second.GetId_CS_Out();
-		graph[cs_id_out].push_back(AddConnection(pipe_id, cs_id_in));
-		}
-	}
-	return graph;
-}
-
-void SaveGraphToFile(unordered_map<int, vector<p_id_in>> graph)
-{
-	ofstream fout;
-	fout.open(file_name(), ios::out);
-	if (!fout.is_open())
-		cout << "Файл не открыт!" << endl;
-	else
-	{
-		for (auto& el : graph)
-		{
-			fout << el.second.size() << " ";
-			fout << el.first << " ";
-			for (auto cs = el.second.begin(); cs != el.second.end(); ++cs)
-			{
-				fout << cs->cs_id_in << " " << cs->pipe_id << " ";
-			}
-			fout << endl;
-		}
-		fout.close();
-	}
-}
-
-void LoadGraphFromFile(unordered_map<int, vector<p_id_in>>& graph)
-{
-	ifstream fin(file_name());
-	if (!fin.is_open())
-		cout << "Файл не открыт!";
-	else
-	{
-		int count;
-		while (fin >> count)
-		{
-			int cs_id_out;
-			fin >> cs_id_out;
-			for (int i = 0; i < count; i++)
-			{
-				int cs_id_in;
-				fin >> cs_id_in;
-				int pipe_id;
-				fin >> pipe_id;
-				p_id_in pair;
-				pair.cs_id_in = cs_id_in;
-				pair.pipe_id = pipe_id;
-				graph[cs_id_out].push_back(pair);
-			}
-		}
-		fin.close();
-	}
-}
 
 bool dfs(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph,  unordered_map<int,char> color, unordered_map<int, int>& used_cs, vector <int>& ans)
 {
@@ -265,7 +200,7 @@ void topological_sort(unordered_map<int, vector<p_id_in>>& graph, vector<int>& a
 	}
 	if (cycle_status == -1)
 		reverse(ans.begin(), ans.end());
-	else cout << "В графе присутствует цикл!";
+	else cout << "В графе присутствует цикл!" << endl;
 }
 
 
@@ -275,13 +210,14 @@ int main()
 	unordered_map<int, Pipe> pipe_group;
 	unordered_map<int, CS> cs_group;
 	unordered_map<int, vector<p_id_in>> graph;
+	unordered_map<int, bool> used;
 
 	while (true)
 	{
 		menu();
 		int command;
 		cout << "Введите команду: ";
-		command = checking(0, 21, "Введите команду: ");
+		command = checking(0, 19, "Введите команду: ");
 		switch (command)
 		{
 		case 0:
@@ -376,6 +312,18 @@ int main()
 						fout << iter.second;
 				}
 				else cout << "Вы забыли ввести данные для КС!\n";
+				//graph
+				fout << endl;
+				for (auto& el : graph)
+				{
+					fout << el.second.size() << " ";
+					fout << el.first << " ";
+					for (auto cs = el.second.begin(); cs != el.second.end(); ++cs)
+					{
+						fout << cs->cs_id_in << " " << cs->pipe_id << " ";
+					}
+					fout << endl;
+				}
 				fout.close();
 			}
 			else cout << "Файл не открыт" << endl;
@@ -406,6 +354,26 @@ int main()
 					CS cs;
 					fin >> cs;
 					cs_group.insert(pair<int, CS>(cs.GetId(), cs));
+				}
+
+				int count;
+				while (fin >> count)
+				{
+					int cs_id_out;
+					fin >> cs_id_out;
+					for (int i = 0; i < count; i++)
+					{
+						int cs_id_in;
+						fin >> cs_id_in;
+						int pipe_id;
+						fin >> pipe_id;
+						p_id_in pair;
+						pair.cs_id_in = cs_id_in;
+						pair.pipe_id = pipe_id;
+						pipe_group[pipe_id].SetId_CS_In(cs_id_in);
+						pipe_group[pipe_id].SetId_CS_Out(cs_id_out);
+						graph[cs_id_out].push_back(AddConnection(pipe_id, cs_id_in));
+					}
 				}
 				fin.close();
 			}
@@ -498,7 +466,6 @@ int main()
 		{
 			//Graph_add_menu
 			bool next = 1;
-			unordered_map<int, bool> used;
 			for (auto iter : pipe_group)
 				used[iter.second.GetId()] = iter.second.GetId_CS_In() != 0;
 			while (next && pipe_group.size() > 0 && cs_group.size() >= 2)
@@ -532,33 +499,27 @@ int main()
 				cout << "Введите 1, чтобы продолжить; 0 - остановиться" << endl;
 				next = checking(0, 1, "Введите 1, чтобы продолжить; 0 - остановиться");
 				pipe_group.find(pipe_id)->second.in_Pipe_out(cs_id_out, cs_id_in);
+				graph[cs_id_out].push_back(AddConnection(pipe_id, cs_id_in));
 			}
 			break;
 		}
 		case 16:
 		{
-			graph = CreateGraph(graph, cs_group, pipe_group);
 			Print_Graph(graph);
 			break;
 		}
 		case 17:
 		{
-			SaveGraphToFile(graph);
+			graph.clear();
+			cout << "Граф удален!" << endl;
+			for (auto& iter : pipe_group)
+			{ 
+				iter.second.SetId_CS_In(0);
+				iter.second.SetId_CS_Out(0);
+			}
 			break;
-
 		}
 		case 18:
-		{
-			LoadGraphFromFile(graph);
-			break;
-		}
-		case 19:
-		{
-			graph.clear();
-			cout << "Граф удален" << endl;
-			break;
-		}
-		case 20:
 		{
 			vector<int> ans;
 			topological_sort(graph, ans);
@@ -570,7 +531,7 @@ int main()
 			}
 			break;
 		}
-		case 21:
+		case 19:
 		{
 			cout << "Введите id КС, которую хотите удалить из графа: ";
 			int cs_id_delete = checking(1u, CS::GetMaxID(), "Введите id КС, которую хотите удалить из графа: ");
