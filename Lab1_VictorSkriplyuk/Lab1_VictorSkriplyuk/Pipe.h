@@ -5,9 +5,9 @@ class Pipe
 {
 	int id;
 	static unsigned int MaxID;
+	bool repair;
 	float length;
 	float diam;
-	bool repair;
 public:
 	Pipe();
 	void editing_pipe();
@@ -21,6 +21,8 @@ public:
 	void in_Pipe_out(int cs_out,int cs_in);
 	static unsigned int GetMaxID();
 	bool GetRepair();
+	int GetCapacity() const;
+	int GetWeight() const;
 	
 	friend std::ostream& operator << (std::ostream& out, const Pipe& pipe);
 	friend std::istream& operator >> (std::istream& in, Pipe& pipe);

@@ -53,6 +53,15 @@ bool Pipe::GetRepair()
 	return repair;
 }
 
+int Pipe::GetCapacity() const
+{
+	return (int)sqrt(pow(diam, 5) / length);
+}
+
+int Pipe::GetWeight() const
+{
+	return (int)length;
+}
 
 void Pipe::editing_pipe()
 {
