@@ -166,12 +166,12 @@ void find_shortest_path(unordered_map<int, vector<p_id_in>>& graph, unordered_ma
 			for (auto i = graph[index].begin(); i != graph[index].end(); i++)
 			{
 				int i1 = i->cs_id_in;
-				if (!passed[i1] &&  distance[index] != INT_MAX && distance[index] + pipe_group[i1].GetWeight() < distance[i1])
+				if (!passed[i1] && !pipe_group[i->pipe_id].GetRepair() &&  distance[index] != INT_MAX && distance[index] + pipe_group[i1].GetWeight() < distance[i1])
 				{
 					distance[i1] = distance[index] + pipe_group[i1].GetWeight();
 					p[i1] = index;
 				}
-				if (pipe_group[i1].GetRepair())
+				if (pipe_group[i->pipe_id].GetRepair())
 				{
 					distance[i1] = INT_MAX;
 				}
