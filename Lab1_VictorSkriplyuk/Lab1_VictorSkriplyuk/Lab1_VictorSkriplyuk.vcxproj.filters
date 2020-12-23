@@ -4,10 +4,12 @@
     <ClCompile Include="CS.cpp" />
     <ClCompile Include="Lab1_VictorSkriplyuk.cpp" />
     <ClCompile Include="Pipe.cpp" />
+    <ClCompile Include="graph_work.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CS.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="graph_work.h" />
   </ItemGroup>
 </Project>

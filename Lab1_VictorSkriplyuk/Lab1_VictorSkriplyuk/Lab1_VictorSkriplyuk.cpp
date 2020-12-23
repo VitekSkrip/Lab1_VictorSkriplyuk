@@ -8,6 +8,7 @@
 #include "unordered_map"
 #include "map"
 #include <algorithm>
+#include "graph_work.h"
 using namespace std;
 
 
@@ -62,6 +63,8 @@ void menu()
 	cout << "17. Удалить граф" << endl;
 	cout << "18. Топологическая сортировка графа" << endl;
 	cout << "19. Удалить КС из графа" << endl;
+	cout << "20. Расчет кратчайшего пути между заданными КС" << endl;
+	cout << "21. Расчет максимального потока в сети" << endl;
 
 
 
@@ -99,277 +102,6 @@ vector<int> Find_PipeOrCS_ByFilter(unordered_map<int, PC>& pc, Filter<PC, T> f, 
 	}
 	return res;
 }
-
-struct p_id_in
-{
-	int cs_id_in;
-	int pipe_id;
-};
-
-p_id_in AddConnection(int& pipe_id, int& cs_id_in)
-{
-	p_id_in pair;
-	pair.pipe_id = pipe_id;
-	pair.cs_id_in = cs_id_in;
-	return pair;
-}
-
-void cs_delete_fromGraph(unordered_map<int, vector<p_id_in>>& graph, unordered_map<int, CS>& cs_group, int& cs_id)
-{
-	if (graph.find(cs_id) != graph.end())
-	{
-		graph.erase(cs_id);
-	}
-	for (auto iter = graph.begin(); iter != graph.end(); iter++)
-	{
-		for (auto i = 0; i < iter->second.size(); i++)
-		{
-			if (iter->second[i].cs_id_in == cs_id)
-				iter->second.erase(iter->second.begin() + i);
-
-		}
-	}
-}
-
-template <typename T>
-void Print_Graph(T graph)
-{
-	for (auto& i : graph)
-	{
-		cout << "КС id=" << i.first << " соединена трубой id=";
-		for (auto j = i.second.begin(); j != i.second.end(); j++)
-		{
-			cout << j->pipe_id << " с КС id=" << j->cs_id_in;
-			if (j + 1 != i.second.end())
-				cout << ", ";
-		}
-		cout << endl;
-	}
-}
-
-
-bool dfs(int cs_id, int& cycle_status, unordered_map<int, vector<p_id_in>> graph,  unordered_map<int,char> color, unordered_map<int, int>& used_cs, vector <int>& ans)
-{
-	// сolor: 0 - не посетили; 1 - посетили; 2 - вышли из вершины
-	color[cs_id] = 1;
-	for (size_t i = 0; i < graph[cs_id].size(); ++i)
-	{
-		int to = graph[cs_id][i].cs_id_in;
-		if (color[to] == 0)
-		{
-			if (dfs(to, cycle_status, graph, color, used_cs, ans))
-				return true;
-		}
-		else if (color[to] == 1)
-		{
-			cycle_status = to;
-			return true;
-		}
-	}
-
-	color[cs_id] = 2;
-	used_cs[cs_id] = true;
-	vector<p_id_in> arr;
-	if (graph.find(cs_id) != graph.end())
-	{
-		int count = 0;
-		int count_v = ans.size();
-		for (int j = 0; j < count_v; j++)
-			if (ans[j] == cs_id)
-				count = count + 1;
-		if (count == 0) ans.push_back(cs_id);
-	}
-	return false;
-}
-
-
-void topological_sort(unordered_map<int, vector<p_id_in>>& graph, vector<int>& ans)
-{
-	ans.clear();
-	unordered_map<int,char> color;	
-	unordered_map<int, int> used_cs;
-	for (auto& i : graph)
-	{
-		color[i.first] = false;
-		used_cs[i.first] = -1;
-	}
-	int cycle_status = -1;
-	for (auto& el : color)
-	{
-		if (dfs(el.first, cycle_status, graph, color, used_cs , ans))
-			break;
-	}
-	if (cycle_status == -1)
-		reverse(ans.begin(), ans.end());
-	else cout << "В графе присутствует цикл!" << endl;
-}
-
-unordered_map<int, bool> count_vertex(unordered_map<int, vector<p_id_in>>& graph)
-{
-	unordered_map<int, bool> count;
-	for (auto& iter : graph)
-	{
-		count[iter.first] = false;
-		for (auto& v : iter.second)
-		{
-			count[v.cs_id_in] = false;
-		}
-	}
-	return count;
-}
-
-void find_shortest_path(unordered_map<int, vector<p_id_in>>& graph, unordered_map<int, Pipe>& pipe_group )
-{
-	cout << "Введите id КС - начало пути: ";
-	int id_from = checking(1u, CS::GetMaxID(), "Введите id КС - начало пути: ");
-	cout << "Введите id КС - конец пути: ";
-	int id_to = checking(1u, CS::GetMaxID(), "Введите id КС - конец пути: ");
-	if (graph.find(id_from) != graph.end())
-	{
-		unordered_map <int,int> distance;
-		unordered_map <int,bool> passed;
-		unordered_map<int, bool> count = count_vertex(graph);
-		unordered_map<int, int>p;
-
-		for (auto i = graph.begin(); i != graph.end(); i++)
-		{
-			int i1 = i->first;
-			distance[i1] = INT_MAX;
-			passed[i1] = false;
-			for (auto j : i->second)
-			{
-				distance[j.cs_id_in] = INT_MAX;
-				passed[j.cs_id_in] = false;
-			}
-		}
-		distance[id_from] = 0;
-		int index = 0;
-		for (auto j = count.begin(); j != count.end(); j++)
-		{
-			int min = INT_MAX;
-			for (auto i = count.begin(); i != count.end(); i++)
-			{
-				int i1 = i->first;
-				if (!passed[i1] && distance[i1] <= min)
-				{
-					min = distance[i1];
-					index = i1;
-				}
-			}
-			passed[index] = true;
-			for (auto i = graph[index].begin(); i != graph[index].end(); i++)
-			{
-				int i1 = i->cs_id_in;
-				if (!passed[i1] && distance[index] != INT_MAX && distance[index] + pipe_group[i1].GetWeight() < distance[i1])
-				{
-					distance[i1] = distance[index] + pipe_group[i1].GetWeight();
-					p[i1] = index;
-				}
-
-			}
-		}
-		cout << "Наикратчайший путь:" << endl;
-		if (distance[id_to] != INT_MAX)
-		{ 
-		cout << id_from << " -> " << id_to << " = " << distance[id_to] << endl;
-		vector <int> path;
-		for (int vertex = id_to; vertex != id_from; vertex = p[vertex])
-			path.push_back(vertex);
-		path.push_back(id_from);
-		reverse(path.begin(), path.end());
-		cout << "Путь: ";
-		for (auto i=path.begin() ; i!=path.end();i++)
-		{
-			if (i + 1 != path.end()) cout << *i << " -> ";
-			else cout << *i;
-		}
-		}
-		else cout << id_from << " -> " << id_to << " - пути нет";
-	}
-	else cout << "Невозможно!" << endl;
-}
-
-
-int bfs(unordered_map<int, vector<p_id_in>>& graph, int id_from, int id_to, vector<int>path, map <pair<int, int>, int> flow)
-{
-	vector<int>color; //цвета вершин
-	vector <int>queue; //Очередь, хранящая номера вершин входящих в неё
-	//vector<int>path; //массив пути
-	//map <pair<int,int>,int> flow;
-	map <pair<int, int>, int> capacity;
-	
-
-	for (int i = 0; i <= graph.size()-1; i++) 
-		color[i] = 0; //отмечаем все вершины непройденными WHITE=0
-	int head = 0;   // Начало очереди 0
-	int tail = 0;   // Хвост 0
-
-	queue[tail] = id_from;   // Вступили на первую вершину
-	tail++;
-	color[id_from] = 1;
-
-	path[id_from] = -1;   // Специальная метка для начала пути
-	while (head != tail) //Пока хвост не совпадет с головой
-	{
-		int u = queue[head]; //вершина u пройдена
-		head++;
-		color[u] = -1;
-
-		for (int i = 0; i <= graph.size() - 1; i++) // Смотрим смежные вершины
-		{
-			// Если не пройдена и не заполнена
-			if (color[i] == 0 && (capacity[make_pair(u, i)] - flow[make_pair(u, i)] > 0))
-			{
-				// Вступаем на вершину v
-				queue[tail] = i;
-				tail++;
-				color[i] = 1;
-				path[i] = u; // Путь обновляем
-			}
-		}
-	}
-	if (color[id_to] == -1) // Если конечная вершина, дошли - возвращаем 0, прочитанная
-		return 0;
-	else return 1;
-}
-
-void max_flow(unordered_map<int, vector<p_id_in>>& graph)
-{
-	cout << "Введите id КС - исток: ";
-	int source = checking(1u, CS::GetMaxID(), "Введите id КС - исток: ");
-	cout << "Введите id КС - сток: ";
-	int stock = checking(1u, CS::GetMaxID(), "Введите id КС - сток: ");
-	if (graph.find(source) != graph.end())
-	{
-		int u;
-		int maxflow = 0;            // Изначально нулевой
-		map <pair<int, int>, int> flow;
-		vector<int>path;
-		map <pair<int, int>, int> capacity;
-		for (const auto& i:graph)  // Зануляем матрицу потока
-		{
-			for (const auto& j : graph)
-				flow.emplace(make_pair(i.first,j.first),0);
-		}
-		while (bfs(graph,source, stock,path,flow) == 0)             // Пока сеществует путь
-		{
-			int delta = INT_MAX;
-			for (u = graph.size() - 1; path[u] >= 0; u = path[u]) // Найти минимальный поток в сети
-			{
-				delta = min(delta, capacity[make_pair(path[u], u)] - flow[make_pair(path[u], u)]);
-			}
-			for (u = graph.size() - 1; path[u] >= 0; u = path[u]) // По алгоритму Форда-Фалкерсона 
-			{
-				flow[make_pair(u,path[u])] += delta;
-				flow[make_pair(path[u], u)] -=delta;
-			}
-			maxflow += delta;                       // Повышаем максимальный поток
-		}
-		cout << "Максимальный поток: " << source << " -> " << stock << " = " << maxflow << endl;
-	}
-	else cout << "Невозможно!" << endl;
-}
-
 
 int main()
 {
@@ -712,7 +444,8 @@ int main()
 		}
 		case 21:
 		{
-			max_flow(graph);
+			unordered_map<int, bool> count_cs = count_vertex(graph);
+			get_maxflow(graph,cs_group,pipe_group,count_cs);
 			break;
 		}
 		}
